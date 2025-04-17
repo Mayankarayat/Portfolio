@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+
+@theme {
+    --font-roboto: "Roboto Mono", monospace;
+    --font-inter: "Inter", serif;
+    --font-anton: "Anton", sans-serif;
+  }
+/* src/styles.css */
+
+html{
+  scroll-behavior: smooth;
+}
+
+/* Define your custom colors using CSS variables */
+:root {
+    --primaryBg: #1f1c2c;
+    --secondaryBg: #2d283e;
+    --cardBg: #53354a;
+    --accent: #e94560;
+    --textPrimary: #ffffff;
+    --textSecondary: #c7c7c7;
+    --textMuted: #a0a0a0;
+    --link: #a29bfe;
+    --linkHover: #dfe6e9;
+    --success: #00b894;
+    --info: #0984e3;
+    --warning: #fdcb6e;
+    --footerBg: #181623;
+  }
+  
+
+  /* Apply these variables globally */
+  body {
+    background-color: var(--primaryBg);
+    color: var(--textPrimary);
+}
+
+#root{
+      overflow: hidden;
+
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    /* color: var(--textPrimary); */
+  }
+
+  p{
+    /* font-family: "Roboto Mono", monospace; */
+  }
+  
+  #quick a {
+    color: var(--link);
+    /* font-family: gil; */
+  }
+  
+  #quick a:hover {
+    color: var(--linkHover);
+  }
+  
+  footer {
+    background-color: var(--footerBg);
+    color: var(--textMuted);
+  }
+
+  .active::after{
+    width: 100%;
+  }
+  
