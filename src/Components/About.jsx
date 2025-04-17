@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import mayank from '../assets/about2.jpeg'
 
 const About = () => {
 
@@ -99,7 +100,7 @@ const About = () => {
         }}
 
         className=' m-auto sm:basis-[50%] md:basis-[45%] lg:basis-[35%]'>
-          <img src="/src/assets/about2.jpeg" className='sm:w-[100%] sm:h-[100%] w-[250px] h-[250px] rounded-full object-cover  sm:rounded-2xl' alt="" />
+          <img src={mayank} className='sm:w-[100%] sm:h-[100%] w-[250px] h-[250px] rounded-full object-cover  sm:rounded-2xl' alt="" />
         </motion.div>
         <div className='sm:basis-[45%] md:basis-[50%] lg:basis-[60%]'>
           <motion.h1

@@ -2,6 +2,7 @@ import React from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { RxCross2 } from "react-icons/rx";
 import { motion } from 'framer-motion';
+import logo from "../assets/logo-Photoroom.png"
 
 
 const Navbar = () => {
@@ -48,7 +49,7 @@ const Navbar = () => {
                     }}
                     className='w-[50px]'>
                     {/* <h1 className='text-xl sm:text-2xl font-inter font-bold'>Mayank Karayat</h1> */}
-                    <img src="/src/assets/logo-Photoroom.png" className='w-full' alt="" />
+                    <img src={logo} className='w-full' alt="" />
                 </motion.div>
                 <div className='flex items-center'>
                     <ul className='hidden sm:flex gap-8 text-xl font-roboto'>

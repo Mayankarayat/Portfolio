@@ -174,14 +174,11 @@ const Contact = () => {
                   type: 'spring'
                 }
               }}
-              initial={{
-                translateY: 0,
-              }}
               whileHover={{
-                translateY: [-5],
                 backgroundColor:"#2d283e",
                 transition:{
-                  duration:.3
+                  duration:.2,
+                  delay:.1
                 }
               }}
               type="submit" className=" border-[1px] text-[#9083ED] bg-[#f4ecff] rounded-[10px] py-3 font-serif text-xl font-bold w-fit px-9 cursor-pointer">Submit</motion.button>

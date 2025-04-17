@@ -1,7 +1,7 @@
 import React from 'react'
 import { TypeAnimation } from 'react-type-animation';
 import { motion } from 'framer-motion';
-
+import mayank from '../assets/mayank.jpeg'
 const Hero = () => {
     return (
         <>
@@ -101,7 +101,7 @@ const Hero = () => {
                             backgroundColor: "#9083ed",
                             translateY: -5
                         }}
-                        href='/src/assets/Mayank Resume.docx' download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
+                        href="../assets/Mayank Resume.docx" download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
                 </div>
                 <div className=' sm:flex sm:justify-end'>
                     <motion.div
@@ -122,7 +122,7 @@ const Hero = () => {
                     }}
                     className='rounded-full w-[200px] sm:w-[250px] h-[200px] sm:h-[250px] lg:w-[340px] lg:h-[340px] overflow-hidden  shadow-[0_0_5px_2px_#aea6ca]'>
 
-                        <img src="/src/assets/mayank.jpeg" className='w-full h-full object-cover object-top' alt="Mayank" />
+                        <img src={mayank} className='w-full h-full object-cover object-top' alt="Mayank" />
                     </motion.div>
 
                 </div>
