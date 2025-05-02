@@ -95,7 +95,7 @@ const Footer = () => {
                                 type:'spring'
                             }
                         }}
-                            ><a href="/public/MayankResume.docx" download className='font-serif'>Resume</a></motion.li>
+                            ><a href="/Mayank_Karayat_Resume.docx" download className='font-serif'>Resume</a></motion.li>
                         </ul>
                     </div>
                     <div className='w-[250px] sm:w-[30%] flex flex-col sm:items-center gap-4'>

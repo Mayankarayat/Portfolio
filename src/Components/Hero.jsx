@@ -101,7 +101,7 @@ const Hero = () => {
                             backgroundColor: "#9083ed",
                             translateY: -5
                         }}
-                        href="/public/MayankResume.docx" download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
+                        href="/Mayank_Karayat_Resume.docx" download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
                 </div>
                 <div className=' sm:flex sm:justify-end'>
                     <motion.div
