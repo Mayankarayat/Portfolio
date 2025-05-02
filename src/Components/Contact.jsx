@@ -19,16 +19,16 @@ const Contact = () => {
 
     emailjs
       .sendForm(
-        "Contact_service",         // Your Service ID
-        "template_8ebjen4",        // Your Template ID
+        "Contact_service",         
+        "template_8ebjen4",       
         form.current,
-        "RtLCdc_m6UZOa56i2"        // Your Public Key
+        "RtLCdc_m6UZOa56i2"        
       )
       .then(
         () => {
           toast.dismiss();
           toast.success("Message sent successfully!");
-          form.current.reset(); // Reset form after sending
+          form.current.reset(); 
         },
         () => {
           toast.dismiss();
@@ -46,8 +46,8 @@ const Contact = () => {
               x: [-100, 0],
               opacity: [0, 1],
               transition: {
-                duration: .8,
-                delay: .8,
+                duration: .5,
+                delay: .4,
                 type: 'spring'
               }
             }}
@@ -57,8 +57,8 @@ const Contact = () => {
               x: [-100, 0],
               opacity: [0, 1],
               transition: {
-                duration: .8,
-                delay: 1,
+                duration: .6,
+                delay: .5,
                 type: 'spring'
               }
             }}
@@ -72,8 +72,8 @@ const Contact = () => {
               x: [-100, 0],
               opacity: [0, 1],
               transition: {
-                duration: .8,
-                delay: 1.2,
+                duration: .7,
+                delay: .6,
                 type: 'spring'
               }
             }}
@@ -87,8 +87,8 @@ const Contact = () => {
                 x: [-50, 0],
                 opacity: [0, 1],
                 transition: {
-                  duration: .8,
-                  delay: 1.4,
+                  duration: .9,
+                  delay: .8,
                   type: 'spring'
                 }
               }}
@@ -107,8 +107,8 @@ const Contact = () => {
                 x: [-100, 0],
                 opacity: [0, 1],
                 transition: {
-                  duration: .8,
-                  delay: 1.6,
+                  duration: 1,
+                  delay: .9,
                   type: 'spring'
                 }
               }}
@@ -132,8 +132,8 @@ const Contact = () => {
                 scale: [0, 1],
                 opacity: [0, 1],
                 transition: {
-                  duration: 1,
-                  delay: 1,
+                  duration: .8,
+                  delay: .7,
                   stiffness: 100,
                   type: 'spring'
                 }
@@ -144,8 +144,8 @@ const Contact = () => {
                 scale: [0, 1],
                 opacity: [0, 1],
                 transition: {
-                  duration: 1,
-                  delay: 1,
+                  duration: .8,
+                  delay: .8,
                   stiffness: 100,
                   type: 'spring'
                 }
@@ -156,8 +156,8 @@ const Contact = () => {
                 scale: [0, 1],
                 opacity: [0, 1],
                 transition: {
-                  duration: 1,
-                  delay: 1,
+                  duration: .8,
+                  delay: .8,
                   stiffness: 100,
                   type: 'spring'
                 }
@@ -168,8 +168,8 @@ const Contact = () => {
                 scale: [0, 1],
                 opacity: [0, 1],
                 transition: {
-                  duration: 1,
-                  delay: 1,
+                  duration: .8,
+                  delay: .8,
                   stiffness: 100,
                   type: 'spring'
                 }

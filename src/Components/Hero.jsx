@@ -6,7 +6,7 @@ const Hero = () => {
     return (
         <>
             <div id='home' className='flex flex-col-reverse sm:justify-between gap-12 sm:gap-8 w-[90%] sm:flex-row  justify-center sm:h-[85vh] items-center py-15 sm:py-0 mx-auto'>
-                <div className='w-full sm:w-[55%] flex flex-col gap-3 sm:gap-4'>
+                <div className='w-full sm:w-[55%] flex flex-col gap-3 sm:gap-3'>
                     <motion.h1
                         initial={{
                             scale: 0
@@ -14,8 +14,8 @@ const Hero = () => {
                         whileInView={{
                             scale: 1,
                             transition: {
-                                duration: 1,
-                                delay: 1,
+                                duration: .8,
+                                delay: .4,
                                 type: 'spring'
                             }
                         }}
@@ -27,8 +27,8 @@ const Hero = () => {
                         whileInView={{
                             opacity: 1,
                             transition: {
-                                duration: 2,
-                                delay: 1.5,
+                                duration: .8,
+                                delay: .5,
                                 type: 'spring'
                             }
                         }}
@@ -55,20 +55,20 @@ const Hero = () => {
                     </motion.p>
                     <motion.p
                         initial={{
-                            x: -150,
+                            x: -40,
                             opacity: 0
                         }}
                         whileInView={{
                             x: 0,
                             opacity: 1,
                             transition: {
-                                duration: 1,
-                                delay: 1,
+                                duration: .8,
+                                delay: .6,
                                 type: 'spring'
                             }
                         }}
-                        className='text-[17px] md:text-xl font-inter'>Passionate about building clean, </motion.p>
-                    <motion.p
+                        className='text-[17px] md:text-xl font-inter'>Passionate about building clean, <br /> responsive web apps.</motion.p>
+                    {/* <motion.p
                         initial={{
                             x: -150,
                             opacity: 0
@@ -82,18 +82,18 @@ const Hero = () => {
                                 type: 'spring'
                             }
                         }}
-                        className='text-[17px] md:text-3xl font-inter'>responsive web apps.</motion.p>
+                        className='text-[17px] md:text-xl font-inter'>responsive web apps.</motion.p> */}
                     <motion.a
                         initial={{
-                            x: -50,
+                            x: -30,
                             opacity: 0
                         }}
                         whileInView={{
                             x: 0,
                             opacity: 1,
                             transition: {
-                                duration: 1,
-                                delay: 1,
+                                duration: .8,
+                                delay: .7,
                                 type: 'spring'
                             }
                         }}
@@ -101,12 +101,12 @@ const Hero = () => {
                             backgroundColor: "#9083ed",
                             translateY: -5
                         }}
-                        href="../assets/Mayank Resume.docx" download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
+                        href="/public/MayankResume.docx" download className='w-fit border-[1px] border-[#9083ed]  font-serif font-bold text-[15px] sm:text-lg mt-2 ease-in-out py-3 px-6 rounded-lg cursor-pointer'>Download CV</motion.a>
                 </div>
                 <div className=' sm:flex sm:justify-end'>
                     <motion.div
                     initial={{
-                        x:100,
+                        x:30,
                         opacity:0,
                         rotateY:0,
                     }}
@@ -115,8 +115,8 @@ const Hero = () => {
                         opacity:1,
                         rotateY:360,
                         transition: {
-                            duration: 3,
-                            delay: 1,
+                            duration: 1.5,
+                            delay: .8,
                             type: 'spring'
                         }
                     }}

@@ -38,8 +38,8 @@ const Projects = () => {
         x:[-80,0],
         opacity:[0,1],
         transition:{
-          duration:1,
-          delay:.6,
+          duration:.5,
+          delay:.4,
           type:'spring'
         }
       }}
@@ -51,8 +51,8 @@ const Projects = () => {
               scale:[0,1],
               opacity:[0,1],
               transition:{
-                duration:1,
-                delay:1,
+                duration:.8,
+                delay:.4,
                 type:'spring'
               }
             }}

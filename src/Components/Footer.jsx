@@ -14,8 +14,8 @@ const Footer = () => {
                             translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:.8,
+                                duration:.2,
+                                delay:.2,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -23,11 +23,11 @@ const Footer = () => {
                         className=' text-2xl font-inter font-semibold'>About me</motion.h1>
                         <motion.p
                         whileInView={{
-                            translateX:[-100,0],
+                            translateX:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:.8,
+                                duration:.3,
+                                delay:.3,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -40,8 +40,8 @@ const Footer = () => {
                             translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:1,
+                                duration:.4,
+                                delay:.4,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -50,11 +50,11 @@ const Footer = () => {
                         <ul id='quick' className='leading-7' >
                             <motion.li
                             whileInView={{
-                            translateY:[-100,0],
+                            translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:1,
+                                duration:.5,
+                                delay:.5,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -62,11 +62,11 @@ const Footer = () => {
                             ><a href="#project" className='font-serif'>Projects</a></motion.li>
                             <motion.li
                             whileInView={{
-                            translateY:[-100,0],
+                            translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:1.2,
+                                duration:.5,
+                                delay:.6,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -74,11 +74,11 @@ const Footer = () => {
                             ><a href="#about" className='font-serif'>Skills</a></motion.li>
                             <motion.li
                             whileInView={{
-                            translateY:[-100,0],
+                            translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:1.4,
+                                duration:.5,
+                                delay:.7,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -86,16 +86,16 @@ const Footer = () => {
                             ><a href="#contact" className='font-serif'>Contact</a></motion.li>
                             <motion.li
                             whileInView={{
-                            translateY:[-100,0],
+                            translateY:[-40,0],
                             opacity:[0,1],
                             transition:{
-                                duration:.8,
-                                delay:1.6,
+                                duration:.5,
+                                delay:.8,
                                 stiffness:100,
                                 type:'spring'
                             }
                         }}
-                            ><a href="/src/assets/Mayank Resume.docx" download className='font-serif'>Resume</a></motion.li>
+                            ><a href="/public/MayankResume.docx" download className='font-serif'>Resume</a></motion.li>
                         </ul>
                     </div>
                     <div className='w-[250px] sm:w-[30%] flex flex-col sm:items-center gap-4'>
@@ -105,7 +105,7 @@ const Footer = () => {
                             opacity:[0,1],
                             transition:{
                                 duration:.6,
-                                delay:1.2,
+                                delay:.9,
                                 stiffness:100,
                                 type:'spring'
                             }
@@ -114,11 +114,11 @@ const Footer = () => {
                         <ul className='flex  gap-5'>
                             <motion.a
                                 whileInView={{
-                                    x: [100, 0],
+                                    x: [30, 0],
                                     opacity: [0, 1],
                                     transition: {
                                         duration: .8,
-                                        delay: 1,
+                                        delay:.9,
                                         type: 'spring',
                                         stiffness:100
                                     }
@@ -130,11 +130,11 @@ const Footer = () => {
                                 href='https://github.com/Mayankarayat' className='bg-[#f4ecff] p-2  rounded-full' target='_blank'><FaGithub color="#9083ED" size={30} /></motion.a>
                             <motion.a
                                 whileInView={{
-                                    x: [100, 0],
+                                    x: [30, 0],
                                     opacity: [0, 1],
                                     transition: {
                                         duration: .8,
-                                        delay: 1.2,
+                                        delay: .9,
                                         type: 'spring',
                                         stiffness:100
                                     }
@@ -146,11 +146,11 @@ const Footer = () => {
                                 href='https://www.linkedin.com/in/mayank-karayat-38a283213/' className='bg-[#f4ecff] p-2  rounded-full' target='_blank'><FaLinkedin color="#9083ED" size={30} /></motion.a>
                             <motion.a
                                 whileInView={{
-                                    x: [-100, 0],
+                                    x: [-30, 0],
                                     opacity: [0, 1],
                                     transition: {
                                         duration: .8,
-                                        delay: 1.4,
+                                        delay: .9,
                                         type: 'spring',
                                         stiffness:100
                                     }

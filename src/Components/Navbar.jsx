@@ -23,7 +23,7 @@ const Navbar = () => {
                     opacity: 1,
                 }}
                 transition={{
-                    duration: .5,
+                    duration: .2,
                     delay: .3,
                     type: 'spring'
                 }}
@@ -43,8 +43,8 @@ const Navbar = () => {
                     }}
 
                     transition={{
-                        duration: .5,
-                        delay: .8,
+                        duration: .3,
+                        delay: .4,
                         type: 'spring'
                     }}
                     className='w-[50px]'>
@@ -52,7 +52,7 @@ const Navbar = () => {
                     <img src={logo} className='w-full' alt="" />
                 </motion.div>
                 <div className='flex items-center'>
-                    <ul className='hidden sm:flex gap-8 text-xl font-roboto'>
+                    <ul className='hidden sm:flex gap-8 text-xl font-inter'>
                         <motion.li
 
                             initial={{
@@ -66,8 +66,8 @@ const Navbar = () => {
                             }}
 
                             transition={{
-                                duration: .8,
-                                delay: 1,
+                                duration: .4,
+                                delay: .5,
                                 type: 'spring'
                             }}
 
@@ -87,8 +87,8 @@ const Navbar = () => {
                             }}
 
                             transition={{
-                                duration: .8,
-                                delay: 1.2,
+                                duration: .4,
+                                delay: .6,
                                 type: 'spring'
                             }}
 
@@ -112,8 +112,8 @@ const Navbar = () => {
                             }}
 
                             transition={{
-                                duration: .8,
-                                delay: 1.4,
+                                duration: .4,
+                                delay: .7,
                                 type: 'spring'
                             }}
 
@@ -133,8 +133,8 @@ const Navbar = () => {
                             }}
 
                             transition={{
-                                duration: .8,
-                                delay: 1.6,
+                                duration: .4,
+                                delay: .8,
                                 type: 'spring'
                             }}
 
@@ -154,8 +154,8 @@ const Navbar = () => {
                         }}
 
                         transition={{
-                            duration:1,
-                            delay:1,
+                            duration:.6,
+                            delay:.6,
                             type:'spring'
                         }}
                     >
@@ -169,7 +169,7 @@ const Navbar = () => {
                     <ul className='flex flex-col justify-center items-center h-full text-[16px] gap-8 font-serif'>
                         <motion.li
                         initial={{
-                            x:100,
+                            x:50,
                             opacity:0
                         }}
                         whileInView={{
@@ -178,7 +178,7 @@ const Navbar = () => {
                         }}
                         transition={{
                             duration:.6,
-                            delay:.5,
+                            delay:.2,
                             type:'spring'
                         }}
                         className="relative cursor-pointer text-[#f4ecff]  transition-colors duration-500 ">
@@ -186,7 +186,7 @@ const Navbar = () => {
                         </motion.li>
                         <motion.li
                         initial={{
-                            x:100,
+                            x:50,
                             opacity:0
                         }}
                         whileInView={{
@@ -195,7 +195,7 @@ const Navbar = () => {
                         }}
                         transition={{
                             duration:.6,
-                            delay:.5,
+                            delay:.2,
                             type:'spring'
                         }}
                         className="relative cursor-pointer text-[#f4ecff]  transition-colors duration-500 ">
@@ -204,7 +204,7 @@ const Navbar = () => {
                         {/* <li className="relative cursor-pointer text-[#f4ecff] hover:text-[#1F1C2C]  transition-colors duration-500 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-[#1f1c2c] font-bold hover:after:w-full after:transition-all after:duration-500"><NavLink to="/experience">Experience</NavLink></li> */}
                         <motion.li
                         initial={{
-                            x:100,
+                            x:50,
                             opacity:0
                         }}
                         whileInView={{
@@ -213,7 +213,7 @@ const Navbar = () => {
                         }}
                         transition={{
                             duration:.6,
-                            delay:.5,
+                            delay:.2,
                             type:'spring'
                         }}
                         className="relative cursor-pointer text-[#f4ecff]  transition-colors duration-500 ">
@@ -221,7 +221,7 @@ const Navbar = () => {
                         </motion.li>
                         <motion.li
                         initial={{
-                            x:100,
+                            x:50,
                             opacity:0
                         }}
                         whileInView={{
@@ -230,7 +230,7 @@ const Navbar = () => {
                         }}
                         transition={{
                             duration:.6,
-                            delay:.5,
+                            delay:.2,
                             type:'spring'
                         }}
                         className="relative cursor-pointer text-[#f4ecff]  transition-colors duration-500 ">
