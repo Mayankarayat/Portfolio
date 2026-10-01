@@ -13,7 +13,7 @@ export function Contact() {
       eyebrow="Contact"
       title={
         <>
-          Have a role or a project in mind? <span className="text-muted">Let&apos;s talk.</span>
+          Have a role or a project in mind? <em className="text-accent">Let&apos;s talk.</em>
         </>
       }
     >

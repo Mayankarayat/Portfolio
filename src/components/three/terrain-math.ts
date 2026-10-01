@@ -12,9 +12,9 @@
  */
 
 export const TERRAIN_PALETTE = {
-  background: "#07070b",
-  low: "#1c1836",
-  high: "#9d92ff",
+  background: "#f6f4ef",
+  low: "#e4e0f5",
+  high: "#5145cd",
 } as const;
 
 export interface GridSize {

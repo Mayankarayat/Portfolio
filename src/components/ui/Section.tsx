@@ -23,7 +23,7 @@ export function Section({ id, index, eyebrow, title, intro, children, className 
             {eyebrow}
           </p>
           <div className="lg:col-span-9">
-            <h2 id={headingId} className="text-balance text-3xl font-semibold tracking-tight sm:text-5xl">
+            <h2 id={headingId} className="text-balance text-[clamp(2.4rem,5vw,4rem)] leading-[1.02]">
               {title}
             </h2>
             {intro ? <p className="mt-5 max-w-2xl text-pretty text-lg text-muted">{intro}</p> : null}

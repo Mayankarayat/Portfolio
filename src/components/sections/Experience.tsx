@@ -24,7 +24,7 @@ export function Experience() {
               <p className="mt-1 text-sm text-subtle">{role.location}</p>
             </div>
             <div className="lg:col-span-9">
-              <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              <h3 className="text-2xl sm:text-3xl">
                 {role.title}
                 <span className="text-muted"> · {role.company}</span>
               </h3>

@@ -52,7 +52,7 @@ function buildSvg(): string {
     const nz = (row / (GRID.rows - 1)) * 2 - 1;
     const fade = Math.max(0, 1 - Math.max(0, Math.hypot(nx, nz) - 0.45) / 0.75);
     const { low, high } = TERRAIN_PALETTE;
-    return `<g opacity="${Math.round(fade * 100) / 100}"><polygon points="${left}" fill="${mix(low, high, t, 0.55)}"/><polygon points="${right}" fill="${mix(low, high, t, 0.8)}"/><polygon points="${top}" fill="${mix(low, high, t)}"/></g>`;
+    return `<g opacity="${Math.round(fade * 100) / 100}"><polygon points="${left}" fill="${mix(low, high, t, 0.86)}"/><polygon points="${right}" fill="${mix(low, high, t, 0.94)}"/><polygon points="${top}" fill="${mix(low, high, t)}"/></g>`;
   });
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${f(width)} ${f(heightPx)}">${shapes.join("")}</svg>`;

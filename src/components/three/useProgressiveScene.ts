@@ -15,8 +15,6 @@ interface ProgressiveSceneConfig {
   progress: (rect: DOMRect, viewportHeight: number) => number;
   /** How close (CSS margin) the section must be before the scene is booted. */
   bootMargin?: string;
-  /** Media query whose changes require rebuilding the scene (e.g. orientation). */
-  rebootQuery?: string;
 }
 
 const OVERRIDES: Record<string, RenderTier> = { off: "none", low: "low", high: "high" };
@@ -38,7 +36,7 @@ function readOverride(): RenderTier | undefined {
  */
 export function useProgressiveScene(
   canvasRef: RefObject<HTMLCanvasElement | null>,
-  { load, progress, bootMargin = "50% 0px", rebootQuery }: ProgressiveSceneConfig,
+  { load, progress, bootMargin = "50% 0px" }: ProgressiveSceneConfig,
 ): SceneState {
   const [state, setState] = useState<SceneState>("poster");
 
@@ -75,8 +73,6 @@ export function useProgressiveScene(
       } catch {
         return; // WebGL creation can still fail (blocklisted GPU); imagery remains.
       }
-      await handle.ready;
-      if (cancelled || !handle) return;
       setState("live");
 
       const updateProgress = () => handle?.setProgress(progress(section.getBoundingClientRect(), window.innerHeight));
@@ -102,16 +98,6 @@ export function useProgressiveScene(
       const onMotionChange = () => motionQuery.matches && teardown();
       motionQuery.addEventListener("change", onMotionChange);
       cleanups.push(() => motionQuery.removeEventListener("change", onMotionChange));
-
-      if (rebootQuery) {
-        const query = window.matchMedia(rebootQuery);
-        const onChange = () => {
-          teardown();
-          void boot(tier);
-        };
-        query.addEventListener("change", onChange);
-        cleanups.push(() => query.removeEventListener("change", onChange));
-      }
     };
 
     // Boot once the page has loaded, the main thread is idle and the section is near.

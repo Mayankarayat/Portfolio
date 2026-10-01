@@ -7,8 +7,8 @@ import { CONTACT_LIMITS, sendContactMessage, validateContact, type ContactErrors
 type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string };
 
 const FIELDS = [
-  { name: "name", label: "Name", type: "text", autoComplete: "name", maxLength: CONTACT_LIMITS.name },
-  { name: "email", label: "Email", type: "email", autoComplete: "email", maxLength: 254 },
+  { name: "name", label: "Name", type: "text", autoComplete: "name", maxLength: CONTACT_LIMITS.name, placeholder: "Your full name" },
+  { name: "email", label: "Email", type: "email", autoComplete: "email", maxLength: 254, placeholder: "you@company.com" },
 ] as const;
 
 export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
@@ -62,6 +62,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
               name={field.name}
               type={field.type}
               autoComplete={field.autoComplete}
+              placeholder={field.placeholder}
               maxLength={field.maxLength}
               required
               className="field"
@@ -87,6 +88,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
           rows={6}
           required
           maxLength={CONTACT_LIMITS.message}
+          placeholder="Tell me about the role, the team or the project — and how I can help."
           className="field resize-y"
           aria-invalid={errors.message ? true : undefined}
           aria-describedby={errors.message ? "contact-message-error" : undefined}

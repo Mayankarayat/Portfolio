@@ -17,12 +17,12 @@ export function Projects() {
         {projects.map((project) => (
           <li key={project.slug} data-reveal>
             <article className="card group relative flex h-full flex-col overflow-hidden transition-colors hover:border-line-strong">
-              <div className="aspect-[8/5] border-b border-line bg-bg/40 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.02]">
+              <div className="aspect-[8/5] border-b border-line bg-elevated/60 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.02]">
                 <ProjectCover kind={project.cover} />
               </div>
               <div className="flex flex-1 flex-col p-6">
                 <p className="eyebrow">{project.tagline}</p>
-                <h3 className="mt-2 text-xl font-semibold tracking-tight">{project.title}</h3>
+                <h3 className="mt-2 text-3xl">{project.title}</h3>
                 <p className="mt-3 flex-1 text-pretty text-sm leading-relaxed text-muted">{project.description}</p>
                 <div className="mt-6">
                   <TagList items={project.stack} label={`${project.title} technologies`} />

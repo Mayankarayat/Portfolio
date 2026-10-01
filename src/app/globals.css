@@ -1,33 +1,44 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
- * Design tokens. Dark-only by design: the hero scene, imagery and accent are
- * tuned for a single dark surface. Accent keeps the original site's violet.
+ * Design tokens — a light, warm "paper" palette. Neutrals carry the layout;
+ * a single soft indigo (a deeper take on the original site's violet) marks
+ * interaction. Ambient pastel washes add depth without competing with photos.
  * ------------------------------------------------------------------------- */
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  /* Labels use the sans in small caps-style tracking; no third family. */
+  --font-mono: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --color-bg: #07070b;
-  --color-surface: #0e0e14;
-  --color-elevated: #15151e;
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.16);
-  --color-fg: #ededf3;
-  --color-muted: #a3a3b5;
-  --color-subtle: #82829a;
-  --color-accent: #9d92ff;
-  --color-accent-strong: #b8b0ff;
-  --color-accent-fg: #0c0a1a;
-  --color-success: #5eead4;
-  --color-danger: #fda4af;
+  --color-bg: #f6f4ef;
+  --color-surface: #ffffff;
+  --color-elevated: #eeebe4;
+  --color-line: rgb(24 22 18 / 0.08);
+  --color-line-strong: rgb(24 22 18 / 0.16);
+  --color-fg: #181612;
+  --color-muted: #57534c;
+  --color-subtle: #625e56;
+  --color-accent: #5145cd;
+  --color-accent-strong: #4036b0;
+  --color-accent-soft: #e9e6fb;
+  --color-accent-fg: #ffffff;
+  --color-success: #0f7a6b;
+  --color-danger: #b42318;
+
+  --color-wash-peach: #f8dcc8;
+  --color-wash-lilac: #dcd6fa;
+  --color-wash-sage: #d5e8dc;
+
+  --shadow-soft: 0 1px 2px rgb(24 22 18 / 0.04), 0 18px 40px -18px rgb(24 22 18 / 0.18);
+  --shadow-lift: 0 2px 6px rgb(24 22 18 / 0.05), 0 40px 80px -32px rgb(40 34 90 / 0.35);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     background: var(--color-bg);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
@@ -43,19 +54,28 @@
     background: var(--color-bg);
     color: var(--color-fg);
     font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
   ::selection {
-    background: color-mix(in oklab, var(--color-accent) 40%, transparent);
+    background: var(--color-accent-soft);
     color: var(--color-fg);
   }
 
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 
@@ -73,9 +93,10 @@
   }
 
   .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-subtle);
   }
@@ -97,14 +118,15 @@
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    padding: 0.75rem 1.25rem;
+    padding: 0.8rem 1.35rem;
     font-size: 0.9375rem;
     font-weight: 500;
     transition:
       background-color 200ms,
       border-color 200ms,
       color 200ms,
-      transform 200ms var(--ease-out-expo);
+      box-shadow 300ms,
+      transform 300ms var(--ease-out-expo);
   }
   .btn:active {
     transform: translateY(1px);
@@ -112,45 +134,133 @@
   .btn-primary {
     background: var(--color-fg);
     color: var(--color-bg);
+    box-shadow: 0 10px 24px -12px rgb(24 22 18 / 0.5);
   }
   .btn-primary:hover {
-    background: var(--color-accent-strong);
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    box-shadow: 0 14px 30px -12px rgb(81 69 205 / 0.55);
   }
   .btn-ghost {
     border: 1px solid var(--color-line-strong);
     color: var(--color-fg);
-    background: rgb(7 7 11 / 0.4);
-    backdrop-filter: blur(8px);
+    background: rgb(255 255 255 / 0.55);
+    backdrop-filter: blur(10px);
   }
   .btn-ghost:hover {
-    border-color: var(--color-accent);
+    border-color: var(--color-fg);
+    background: var(--color-surface);
   }
 
   .card {
     border: 1px solid var(--color-line);
-    border-radius: 1.25rem;
-    background: linear-gradient(180deg, var(--color-surface), rgb(14 14 20 / 0.6));
+    border-radius: 1.5rem;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
   }
 
   .field {
     width: 100%;
-    border-radius: 0.75rem;
+    border-radius: 0.9rem;
     border: 1px solid var(--color-line-strong);
-    background: var(--color-surface);
-    padding: 0.8rem 1rem;
+    background: var(--color-bg);
+    padding: 0.85rem 1rem;
     color: var(--color-fg);
-    transition: border-color 200ms, box-shadow 200ms;
+    transition:
+      border-color 200ms,
+      box-shadow 200ms,
+      background-color 200ms;
   }
   .field::placeholder {
     color: var(--color-subtle);
   }
+  .field:hover {
+    border-color: rgb(24 22 18 / 0.28);
+  }
   .field:focus {
     outline: none;
+    background: var(--color-surface);
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 25%, transparent);
+    box-shadow: 0 0 0 4px var(--color-accent-soft);
   }
   .field[aria-invalid="true"] {
     border-color: var(--color-danger);
+  }
+
+  /* Soft pastel light behind content — the "premium paper" ambience. Radial
+     gradients rather than blur filters: same look, nearly free to paint. */
+  .wash {
+    position: absolute;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, var(--wash), transparent);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .wash-peach {
+    --wash: var(--color-wash-peach);
+  }
+  .wash-lilac {
+    --wash: var(--color-wash-lilac);
+  }
+  .wash-sage {
+    --wash: var(--color-wash-sage);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 3D portrait rigs. `--rx/--ry` come from the Tilt client component (pointer);
+ * layers sit at different depths so the cut-outs float above their cards.
+ * ------------------------------------------------------------------------- */
+.stage-3d {
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+.rig-3d {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 600ms var(--ease-out-expo);
+  will-change: transform;
+}
+.layer-3d {
+  transform: translateZ(var(--z, 0px));
+  transform-style: preserve-3d;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateZ(var(--z, 0px)) translateY(0);
+  }
+  50% {
+    transform: translateZ(var(--z, 0px)) translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .float-slow {
+    animation: float-y 7s ease-in-out infinite;
+  }
+  .float-slower {
+    animation: float-y 9s ease-in-out infinite;
+    animation-delay: -3s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rig-3d {
+    transform: none !important;
+  }
+}
+
+/* Scroll-linked 3D entrance for portrait cards (CSS only; static elsewhere). */
+@keyframes swing-in {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(14deg) translateY(60px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -176,6 +286,11 @@
       animation-timeline: view();
       animation-range: entry 5% entry 45%;
     }
+    [data-swing] {
+      animation: swing-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
   }
 }
 
@@ -196,7 +311,6 @@
 @keyframes settle {
   from {
     transform: translateY(14px);
-    letter-spacing: -0.02em;
   }
   to {
     transform: none;
@@ -217,7 +331,7 @@
 @keyframes pulse-dot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-success) 60%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-success) 45%, transparent);
   }
   50% {
     box-shadow: 0 0 0 6px transparent;
@@ -228,14 +342,4 @@
   .pulse-dot {
     animation: pulse-dot 2.4s ease-in-out infinite;
   }
-}
-
-/* ---------------------------------------------------------------------------
- * Story: poster stills fade out once the live 3D stage is ready beneath them.
- * ------------------------------------------------------------------------- */
-.story-poster {
-  transition: opacity 900ms var(--ease-out-expo);
-}
-.story[data-story="live"] .story-poster {
-  opacity: 0;
 }

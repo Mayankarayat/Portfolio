@@ -4,7 +4,8 @@ import { Contact } from "@/components/sections/Contact";
 import { Experience } from "@/components/sections/Experience";
 import { Projects } from "@/components/sections/Projects";
 import { Skills } from "@/components/sections/Skills";
-import { Story } from "@/components/sections/Story";
+import { Chapters } from "@/components/sections/Chapters";
+import { Hero } from "@/components/sections/Hero";
 import { Work } from "@/components/sections/Work";
 import { siteConfig } from "@/config/site";
 import { education, experience, profile, socials } from "@/content/profile";
@@ -38,7 +39,8 @@ export default function HomePage() {
       />
       <SiteHeader />
       <main id="main">
-        <Story />
+        <Hero />
+        <Chapters />
         <Work />
         <Experience />
         <Projects />

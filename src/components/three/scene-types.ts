@@ -14,6 +14,4 @@ export interface SceneHandle {
   /** Pause/resume rendering (off-screen, hidden tab). Scenes start paused. */
   setActive(active: boolean): void;
   dispose(): void;
-  /** Optional: resolves when the scene has something worth showing (no empty first frame). */
-  ready?: Promise<void>;
 }

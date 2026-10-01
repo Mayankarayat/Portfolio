@@ -30,8 +30,8 @@ export function Work() {
             <span aria-hidden="true" className="mx-2 text-line-strong">/</span>
             Inside Workedge HR
           </p>
-          <h2 id="work-title" className="mt-6 text-balance text-3xl font-semibold tracking-tight sm:text-5xl">
-            Raw HR data in, <span className="text-muted">clear interfaces out.</span>
+          <h2 id="work-title" className="mt-6 text-balance text-[clamp(2.4rem,5vw,4rem)] leading-[1.02]">
+            Raw HR data in, <em className="text-accent">clear interfaces out.</em>
           </h2>
           <p className="mt-5 text-pretty text-lg text-muted">
             The modules I build on at Guidona Softpedia. Scroll and watch the surface resolve into a chart.
@@ -42,10 +42,10 @@ export function Work() {
           {productModules.map((module, i) => (
             <li
               key={module.name}
-              className="flex flex-col rounded-2xl border border-line bg-bg/70 p-6 backdrop-blur-md transition-colors hover:border-line-strong"
+              className="flex flex-col rounded-2xl border border-white/80 bg-white/75 p-6 shadow-[var(--shadow-soft)] backdrop-blur-md transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-line-strong"
             >
               <span className="font-mono text-xs text-accent">{String(i + 1).padStart(2, "0")}</span>
-              <h3 className="mt-6 text-lg font-semibold tracking-tight">{module.name}</h3>
+              <h3 className="mt-6 text-2xl">{module.name}</h3>
               <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{module.description}</p>
               <p className="mt-6 font-mono text-[11px] text-subtle">{module.tech.join(" · ")}</p>
             </li>

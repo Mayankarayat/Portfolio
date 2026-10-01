@@ -6,9 +6,10 @@ Live: https://portfolio-chi-vert-33.vercel.app
 ## Stack
 
 - **Next.js 16** (App Router, fully static prerender) + **React 19** + **strict TypeScript**
-- **Tailwind CSS v4** with design tokens in `src/app/globals.css`
-- **three.js** (vanilla, lazy-loaded) for the hero scene
-- **Geist** fonts self-hosted via `next/font`
+- **Tailwind CSS v4** with design tokens in `src/app/globals.css` (light "paper" palette)
+- **CSS 3D** portraits (cut-out photos with depth + pointer tilt) and a lazy-loaded
+  **three.js** data terrain
+- **Instrument Serif** (display) + **Inter** (text), self-hosted via `next/font/local` (SIL OFL)
 - **Vitest** for unit tests
 
 ## Scripts
@@ -33,49 +34,40 @@ src/
                         hero-terrain.svg (build-time generated poster)
   components/
     layout/             SiteHeader (client: scroll-spy, mobile menu), SiteFooter
-    sections/           Story (hero + chapters), Work, Experience, Projects, Skills, Contact
-    three/              StoryScene/TerrainScene (client), story-scene/terrain-scene (WebGL),
-                        story-path/terrain-math (pure, tested), useProgressiveScene, render-loop
+    sections/           Hero, Chapters, Work, Experience, Projects, Skills, Contact
+    portrait/           PopOutPortrait (server), Tilt (client: pointer → CSS vars)
+    three/              TerrainScene (client), terrain-scene (WebGL), terrain-math (pure, tested),
+                        useProgressiveScene, render-loop
     contact/            ContactForm (client)
     ui/                 Icon, Section, TagList
   config/site.ts        site URL, navigation, EmailJS config
   content/              typed content model — profile.ts (facts) and story.ts (chapters)
+  assets/portrait/      AI-upscaled photos and their cut-outs (PNG with alpha)
+  fonts/                self-hosted woff2 files + licences
   lib/                  render-tier (device capability), contact validation, formatting
 ```
 
 - **Content is data.** Every fact on the page comes from `src/content/profile.ts`, typed by
   `src/content/types.ts`. Updating the résumé means editing one file.
 - **Server-first.** Sections are React Server Components; only the header, contact form and
-  the two 3D loaders ship JavaScript. Scroll reveals use CSS scroll-driven animations (zero JS) and
+  the 3D tilt and terrain loader ship JavaScript. Scroll reveals use CSS scroll-driven animations (zero JS) and
   degrade to static content where unsupported or when reduced motion is requested.
 
-### 3D story (top of the page)
+### 3D portraits (hero + chapters)
 
-The page opens as a scroll story told with Mayank's own clips — outside, at the
-desk, thinking it through, then *into the screen*:
+Built from Mayank's own photos — no video, nothing blurry:
 
-- **Media pipeline:** the original clips are portrait 1080×1920, so each screen shape gets
-  its own cut. Landscape screens get a 16:9 crop whose every frame is AI-upscaled ×4 with
-  Real-ESRGAN (`realesr-general-x4v3`) and resampled to 1080p — that turns a 1080×608 strip
-  into genuinely sharp video — with 4K (3840×2160) upscaled stills. Portrait screens get the
-  clips' native 9:16 framing (1080×1920) and 1440×2560 upscaled stills, so phones never
-  magnify a thin crop. Everything is colour-graded to the site palette and encoded as H.264
-  MP4 (1080p/720p landscape, 1080×1920 portrait) plus VP9 WebM fallbacks. Ambient clips are
-  forward+reverse loops (seamless); the final push-in uses short GOPs for smooth scrubbing.
-  Stills live in `src/assets/story` and are served art-directed via `<picture>`.
-- **Scene** (`story-scene.ts`): each clip is a rounded, film-grained frame hung in a
-  dark, dusty 3D space. Scroll drives the camera along a choreographed path
-  (`story-path.ts`, pure + unit tested): the hero frame fills the screen, pulls
-  back to reveal it floats in space, flies to each chapter's frame beside its copy,
-  and finally dives into the monitor while the clip scrubs — landing in the Work
-  section's data terrain.
-- **Streaming:** only nearby chapters load; a clip preloads within one chapter and
-  only decodes while its frame is on screen. Posters reuse the optimised images
-  the page already downloaded. The engine picks MP4 or WebM per browser support, and
-  rebuilds itself (16:9 ↔ 9:16 frames) when a device rotates.
-- **Fallback:** chapters are real server-rendered HTML with sticky full-bleed stills,
-  so without WebGL (reduced motion, Save-Data, software GPU, slow devices) the page
-  reads as a cinematic stills story and downloads no video at all.
+- **Imagery pipeline:** each photo is upscaled ×4 with Real-ESRGAN (`realesr-general-x4v3`)
+  and cut out with BiRefNet (portrait model) into a transparent PNG. Masters are kept at 2×
+  display size; `next/image` serves AVIF/WebP at the size each screen needs.
+- **Hero:** the full-body cut-out stands in a softly lit arch with skill chips floating at
+  different depths (`translateZ`) inside one CSS 3D rig.
+- **Chapters:** each is a photo *card* (from the chin down) plus a *pop* layer — the cut-out
+  head and shoulders — 30px in front, rising out of the card's top edge; the layer's scale
+  cancels its perspective growth so the seam lines up, and a feathered mask hides it.
+- **Motion:** `Tilt` maps the pointer to two CSS variables (fine pointers only, rAF-batched,
+  no React re-renders); cards swing in with CSS scroll-driven animations; chips float. All of
+  it is disabled for `prefers-reduced-motion`, and the page is fully static without JS.
 
 ### Data terrain (Work section)
 
@@ -87,23 +79,24 @@ ordered, grouped bar chart (a dashboard) as you scroll.
 - `terrain-math.ts` is the reference height model; the GLSL mirrors it and the build-time
   SVG poster (`/hero-terrain.svg`) is generated from it.
 
-### Shared WebGL lifecycle
+### WebGL lifecycle
 
-Both scenes use `useProgressiveScene` + `render-loop.ts`:
+`TerrainScene` uses `useProgressiveScene` + `render-loop.ts`:
 
 - three.js is dynamically imported after `load` + `requestIdleCallback`, and only once the
   section is near the viewport — never on the critical path.
 - **Tiers** (`src/lib/render-tier.ts`, probed once per page): `none` (no WebGL, software GL
   such as SwiftShader/llvmpipe, reduced motion, Save-Data, 2G, <2 GiB RAM) keeps the static
-  imagery; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB) gets 720p landscape clips, fewer particles,
-  lower DPR caps and no pointer tracking; `high` gets everything.
+  SVG poster; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB) gets a smaller grid, lower DPR cap
+  and no pointer tracking; `high` gets everything.
 - **Runtime safety:** rendering pauses off-screen and in hidden tabs; DPR adapts down when
   frames are slow; if a device still can't hold ~22 fps at DPR 1, the context is lost, or
-  reduced motion is switched on, the scene tears down and the static imagery remains.
+  reduced motion is switched on, the scene tears down and the poster remains.
 - QA override: append `?scene=off|low|high` to force a tier (forced tiers skip the
   performance fallback).
 
 ### Contact form
 
 Posts directly to the EmailJS REST API (no SDK) using the existing template's field names,
-with client-side validation, a honeypot, a request timeout and an `aria-live` status region.
+with labelled fields and placeholders, client-side validation, a honeypot, a request timeout
+and an `aria-live` status region.

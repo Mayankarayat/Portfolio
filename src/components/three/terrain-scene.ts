@@ -86,7 +86,7 @@ const vertexShader = /* glsl */ `
     vDepth = -mv.z;
     vEdge = length(p / ((uGrid - 1.0) * 0.5));
     // Once ordered, each row reads as its own data series.
-    vSeries = mix(1.0, 0.5 + 0.5 * hash(cell.y + 7.0), k);
+    vSeries = mix(1.0, 0.72 + 0.28 * hash(cell.y + 7.0), k);
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -107,12 +107,13 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec3 n = normalize(vNormal);
-    float light = 0.35 + 0.65 * max(dot(n, normalize(vec3(0.45, 1.0, 0.3))), 0.0);
+    float light = 0.72 + 0.28 * max(dot(n, normalize(vec3(0.45, 1.0, 0.3))), 0.0);
     vec3 color = mix(uLow, uHigh, smoothstep(0.15, 1.0, vHeight)) * light;
 
     float top = step(0.5, n.y);
     color += top * uHigh * 0.35 * smoothstep(0.35, 1.0, vHeight);
-    color *= mix(0.25, 1.0, vLocalY) * vSeries;
+    // Light theme: bars rise out of the paper rather than out of shadow.
+    color = mix(uBackground, color * vSeries, mix(0.15, 1.0, vLocalY));
 
     float fog = smoothstep(uFogNear, uFogFar, vDepth);
     float edge = smoothstep(0.55, 1.0, vEdge);

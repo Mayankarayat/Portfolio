@@ -5,8 +5,8 @@ import type { ProjectCover as CoverKind } from "@/content/types";
  * DPR, and consistent across cards. Replace with real captures when available.
  */
 const ACCENT = "var(--color-accent)";
-const LINE = "rgb(255 255 255 / 0.14)";
-const FILL = "rgb(255 255 255 / 0.04)";
+const LINE = "rgb(24 22 18 / 0.14)";
+const FILL = "rgb(255 255 255 / 0.7)";
 
 function Bookstore() {
   const spines = [70, 92, 64, 100, 80, 58, 88, 96, 72, 84, 60, 90];
