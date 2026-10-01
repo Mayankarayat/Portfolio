@@ -218,8 +218,31 @@
 .rig-3d {
   transform-style: preserve-3d;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 600ms var(--ease-out-expo);
   will-change: transform;
+}
+
+/* Depth parallax: nearer layers drift further with the cursor. Uses the
+   individual `translate` property so it composes with float animations. */
+.drift-1 {
+  translate: calc(var(--px, 0) * 8px) calc(var(--py, 0) * 6px);
+}
+.drift-2 {
+  translate: calc(var(--px, 0) * 16px) calc(var(--py, 0) * 11px);
+}
+.drift-3 {
+  translate: calc(var(--px, 0) * 26px) calc(var(--py, 0) * 18px);
+}
+.drift-back {
+  translate: calc(var(--px, 0) * -10px) calc(var(--py, 0) * -7px);
+}
+
+/* Soft light that follows the cursor across a photo. */
+.glare {
+  pointer-events: none;
+  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 35%), rgb(255 255 255 / 0.32), transparent 55%);
+  mix-blend-mode: soft-light;
+  opacity: var(--glare, 0);
+  transition: opacity 500ms var(--ease-out-expo);
 }
 .layer-3d {
   transform: translateZ(var(--z, 0px));
@@ -250,16 +273,21 @@
   .rig-3d {
     transform: none !important;
   }
+  .drift-1,
+  .drift-2,
+  .drift-3,
+  .drift-back {
+    translate: none;
+  }
 }
 
 /* Scroll-linked 3D entrance for portrait cards (CSS only; static elsewhere). */
+/* Movement only — never fade photos, so they're always at full colour. */
 @keyframes swing-in {
   from {
-    opacity: 0;
-    transform: perspective(1400px) rotateX(14deg) translateY(60px) scale(0.96);
+    transform: perspective(1400px) rotateX(12deg) translateY(48px) scale(0.97);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
@@ -289,7 +317,7 @@
     [data-swing] {
       animation: swing-in linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 35%;
+      animation-range: entry 0% entry 75%;
     }
   }
 }
@@ -341,5 +369,49 @@
 @media (prefers-reduced-motion: no-preference) {
   .pulse-dot {
     animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Scrollbar + reading progress
+ * ------------------------------------------------------------------------- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(24 22 18 / 0.28) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(24 22 18 / 0.22);
+  border: 3px solid var(--color-bg);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Thin accent line under the header that fills as you read (CSS only). */
+.scroll-progress {
+  display: none;
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    transform-origin: 0 50%;
+    animation: grow-x linear both;
+    animation-timeline: scroll(root block);
   }
 }

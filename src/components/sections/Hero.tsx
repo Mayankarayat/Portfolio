@@ -88,17 +88,17 @@ export function Hero() {
           </dl>
         </div>
 
-        <Tilt max={6} className="relative mx-auto h-[min(74svh,700px)] w-full max-w-md lg:col-span-5">
+        <Tilt max={9} className="relative mx-auto h-[min(74svh,700px)] w-full max-w-md lg:col-span-5">
           <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
             {/* Arch of light behind the figure */}
             <div
               aria-hidden="true"
-              className="layer-3d absolute inset-x-[8%] bottom-[4%] top-[10%] rounded-t-full bg-gradient-to-b from-white via-accent-soft to-wash-peach ring-1 ring-white [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
+              className="layer-3d drift-back absolute inset-x-[8%] bottom-[4%] top-[10%] rounded-t-full bg-gradient-to-b from-white via-accent-soft to-wash-peach ring-1 ring-white [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
               style={depth(-60)}
             />
             <div
               aria-hidden="true"
-              className="layer-3d absolute inset-x-[8%] bottom-[4%] top-[10%] overflow-hidden rounded-t-full [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
+              className="layer-3d drift-back absolute inset-x-[8%] bottom-[4%] top-[10%] overflow-hidden rounded-t-full [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
               style={depth(-58)}
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgb(255_255_255/0.9),transparent_60%)]" />
@@ -111,7 +111,7 @@ export function Hero() {
               style={depth(-10)}
             />
 
-            <div className="layer-3d absolute inset-0" style={depth(0)}>
+            <div className="layer-3d drift-1 absolute inset-0" style={depth(0)}>
               <Image
                 src={hero}
                 alt={`${profile.name} standing, hands clasped, in a green shirt`}
@@ -131,7 +131,7 @@ export function Hero() {
               <span
                 key={chip.label}
                 aria-hidden="true"
-                className={`layer-3d ${chip.float} absolute ${chip.pos} rounded-full border border-white/80 bg-white/70 px-4 py-2 text-[13px] font-medium shadow-[var(--shadow-soft)] backdrop-blur-md`}
+                className={`layer-3d drift-3 ${chip.float} absolute ${chip.pos} rounded-full border border-white/80 bg-white/70 px-4 py-2 text-[13px] font-medium shadow-[var(--shadow-soft)] backdrop-blur-md`}
                 style={depth(chip.z)}
               >
                 <span className="mr-2 inline-block size-1.5 -translate-y-px rounded-full bg-accent align-middle" />

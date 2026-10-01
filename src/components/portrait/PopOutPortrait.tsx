@@ -17,8 +17,9 @@ interface PopOutPortraitProps {
 /**
  * A photo card with Mayank stepping out of it: the card shows the photo from
  * the chin down, a transparent cut-out layer (head and shoulders) sits 30px in
- * front of it and continues above the card's top edge. Pointer tilt (desktop)
- * and a scroll-linked swing-in reveal the depth. Purely CSS 3D — crisp images,
+ * front of it and continues above the card's top edge. The rig turns toward the
+ * cursor (desktop) with a light glare and drifting chips; a scroll-linked
+ * swing-in reveals the depth. Purely CSS 3D — crisp images,
  * no WebGL, no video.
  */
 export function PopOutPortrait({ image, chips = [], sizes }: PopOutPortraitProps) {
@@ -31,11 +32,11 @@ export function PopOutPortrait({ image, chips = [], sizes }: PopOutPortraitProps
 
   return (
     <div data-swing style={{ paddingTop: `${headroom}%` }}>
-      <Tilt max={7}>
+      <Tilt max={10}>
         <div className="relative" style={{ aspectRatio: `${width} / ${card.height}`, transformStyle: "preserve-3d" }}>
           <div className="layer-3d absolute inset-0 overflow-hidden rounded-[2rem] bg-elevated shadow-[var(--shadow-lift)] ring-1 ring-black/5">
             <Image src={card} alt={image.alt} fill sizes={sizes} quality={85} className="object-cover" />
-            <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/10" />
+            <div aria-hidden="true" className="glare absolute inset-0" />
           </div>
 
           <div
@@ -60,7 +61,7 @@ export function PopOutPortrait({ image, chips = [], sizes }: PopOutPortraitProps
             <span
               key={chip}
               aria-hidden="true"
-              className={`layer-3d absolute ${i === 0 ? "float-slow -right-3 top-[18%] sm:-right-6" : "float-slower -left-3 bottom-[14%] sm:-left-6"} rounded-full border border-white/70 bg-white/75 px-4 py-2 text-[13px] font-medium text-fg shadow-[var(--shadow-soft)] backdrop-blur-md`}
+              className={`layer-3d drift-3 absolute ${i === 0 ? "float-slow -right-3 top-[18%] sm:-right-6" : "float-slower -left-3 bottom-[14%] sm:-left-6"} rounded-full border border-white/70 bg-white/75 px-4 py-2 text-[13px] font-medium text-fg shadow-[var(--shadow-soft)] backdrop-blur-md`}
               style={{ "--z": `${70 + i * 30}px` } as CSSProperties}
             >
               <span className="mr-2 inline-block size-1.5 -translate-y-px rounded-full bg-accent align-middle" />

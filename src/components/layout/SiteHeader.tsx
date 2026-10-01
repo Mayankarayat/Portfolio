@@ -70,6 +70,7 @@ export function SiteHeader() {
       data-scrolled={scrolled || open}
       className="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,backdrop-filter] duration-300 data-[scrolled=true]:border-line data-[scrolled=true]:bg-bg/75 data-[scrolled=true]:backdrop-blur-xl"
     >
+      <div aria-hidden="true" className="scroll-progress absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-accent via-accent to-wash-peach" />
       <div className="container-page flex h-16 items-center justify-between">
         <a href="#top" className="group flex items-center gap-3">
           <span
