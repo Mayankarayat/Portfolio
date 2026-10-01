@@ -56,6 +56,17 @@ function probeWebGL(): { webgl: boolean; softwareRenderer: boolean } {
   }
 }
 
+let cachedTier: RenderTier | undefined;
+
+/**
+ * Browser tier, computed once per page: probing WebGL creates a throwaway
+ * context, which is expensive on software renderers — never do it twice.
+ */
+export function detectRenderTier(): RenderTier {
+  cachedTier ??= getRenderTier(readDeviceSignals());
+  return cachedTier;
+}
+
 export function readDeviceSignals(): DeviceSignals {
   const nav = navigator as NavigatorWithHints;
   return {

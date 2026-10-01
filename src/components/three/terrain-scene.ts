@@ -11,13 +11,14 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import type { RenderTier } from "@/lib/render-tier";
+import { createRenderLoop } from "./render-loop";
+import type { SceneHandle, SceneOptions } from "./scene-types";
 import { GRID_BY_TIER, TERRAIN_PALETTE } from "./terrain-math";
 
 /**
  * The hero "data terrain": one instanced draw call, all animation computed in
  * the vertex shader from a handful of uniforms, so the CPU does no per-frame
- * buffer work. Loaded lazily (see HeroScene) so three.js never sits on the
+ * buffer work. Loaded lazily (see TerrainScene) so three.js never sits on the
  * critical path.
  */
 
@@ -121,24 +122,10 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-export interface TerrainOptions {
-  tier: Exclude<RenderTier, "none">;
-  onContextLost?: () => void;
-  /** Called when the device can't sustain the scene even at minimum quality. */
-  onUnderperform?: () => void;
-}
-
-export interface TerrainHandle {
-  /** 0 → organic surface, 1 → ordered bar chart. */
-  setProgress(progress: number): void;
-  /** Pause/resume the render loop (off-screen, hidden tab). */
-  setActive(active: boolean): void;
-  dispose(): void;
-}
+export type TerrainOptions = SceneOptions;
+export type TerrainHandle = SceneHandle;
 
 const MAX_DPR = { high: 1.75, low: 1.25 } as const;
-const SLOW_FRAME_MS = 24;
-const FAILING_FRAME_MS = 45;
 
 export function createTerrain(canvas: HTMLCanvasElement, options: TerrainOptions): TerrainHandle {
   const { tier } = options;
@@ -150,8 +137,6 @@ export function createTerrain(canvas: HTMLCanvasElement, options: TerrainOptions
     alpha: false,
     powerPreference: tier === "high" ? "high-performance" : "low-power",
   });
-  let dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR[tier]);
-  renderer.setPixelRatio(dpr);
   renderer.setClearColor(TERRAIN_PALETTE.background, 1);
 
   const scene = new Scene();
@@ -233,18 +218,11 @@ export function createTerrain(canvas: HTMLCanvasElement, options: TerrainOptions
   // --- loop ----------------------------------------------------------------
   let progress = 0;
   let order = 0;
-  let active = true;
-  let frame = 0;
-  let last = performance.now();
   let elapsed = 0;
   let introStart = -1;
-  let slowFrames = 0;
-  let failingFrames = 0;
-  let failingWindows = 0;
-  let sampledFrames = 0;
 
   const updateCamera = () => {
-    // Landscape: the field sits to the right of the headline. Portrait: the
+    // Landscape: the field sits to the right of the copy. Portrait: the
     // camera looks past the origin so the field occupies the lower half.
     if (camera.aspect < 1) {
       camera.position.set(0, 26 + progress * 5, 38 - progress * 4);
@@ -258,82 +236,47 @@ export function createTerrain(canvas: HTMLCanvasElement, options: TerrainOptions
     camera.lookAt(target);
   };
 
-  const render = (now: number) => {
-    frame = requestAnimationFrame(render);
-    const delta = Math.min(now - last, 100);
-    last = now;
-    elapsed += delta / 1000;
-    if (introStart < 0) introStart = now;
+  const loop = createRenderLoop({
+    renderer,
+    maxDpr: MAX_DPR[tier],
+    resize,
+    onUnderperform: options.onUnderperform,
+    frame(delta, now) {
+      elapsed += delta / 1000;
+      // The intro (bars rising) starts the first time the scene is actually shown.
+      if (introStart < 0) introStart = now;
 
-    // Adaptive resolution: drop DPR if the GPU cannot keep up; give up
-    // entirely (poster fallback) if even DPR 1 stays below ~22 fps.
-    sampledFrames++;
-    if (delta > SLOW_FRAME_MS) slowFrames++;
-    if (delta > FAILING_FRAME_MS) failingFrames++;
-    if (sampledFrames >= 60) {
-      if (slowFrames > 30 && dpr > 1) {
-        dpr = Math.max(1, dpr - 0.25);
-        renderer.setPixelRatio(dpr);
-        resize();
-      } else if (failingFrames > 30 && dpr <= 1) {
-        failingWindows++;
-      } else {
-        failingWindows = 0;
-      }
-      sampledFrames = 0;
-      slowFrames = 0;
-      failingFrames = 0;
-      if (failingWindows >= 2) {
-        stop();
-        options.onUnderperform?.();
-        return;
-      }
-    }
+      order += (progress - order) * Math.min(1, delta / 250);
+      uniforms.uTime.value = elapsed * 0.6;
+      uniforms.uOrder.value = order;
+      uniforms.uIntro.value = Math.min(1, (now - introStart) / 1800);
 
-    order += (progress - order) * Math.min(1, delta / 250);
-    uniforms.uTime.value = elapsed * 0.6;
-    uniforms.uOrder.value = order;
-    uniforms.uIntro.value = Math.min(1, (now - introStart) / 1800);
+      const pointerOn = now < pointerActiveUntil ? 1 : 0;
+      uniforms.uPointerStrength.value += (pointerOn - uniforms.uPointerStrength.value) * Math.min(1, delta / 300);
+      uniforms.uPointer.value.lerp(pointerGoal, Math.min(1, delta / 120));
 
-    const pointerOn = now < pointerActiveUntil ? 1 : 0;
-    uniforms.uPointerStrength.value += (pointerOn - uniforms.uPointerStrength.value) * Math.min(1, delta / 300);
-    uniforms.uPointer.value.lerp(pointerGoal, Math.min(1, delta / 120));
-
-    updateCamera();
-    renderer.render(scene, camera);
-  };
-
-  const start = () => {
-    if (frame) return;
-    last = performance.now();
-    frame = requestAnimationFrame(render);
-  };
-  const stop = () => {
-    cancelAnimationFrame(frame);
-    frame = 0;
-  };
+      updateCamera();
+      renderer.render(scene, camera);
+    },
+  });
 
   const onContextLost = (event: Event) => {
     event.preventDefault();
-    stop();
+    loop.stop();
     options.onContextLost?.();
   };
   canvas.addEventListener("webglcontextlost", onContextLost);
-
-  start();
 
   return {
     setProgress(value) {
       progress = Math.min(1, Math.max(0, value));
     },
-    setActive(next) {
-      if (next === active) return;
-      active = next;
-      if (active) start();
-      else stop();
+    setActive(active) {
+      if (active) loop.start();
+      else loop.stop();
     },
     dispose() {
-      stop();
+      loop.stop();
       resizeObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("webglcontextlost", onContextLost);

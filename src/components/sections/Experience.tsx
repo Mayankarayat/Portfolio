@@ -1,4 +1,4 @@
-import { experience, productModules } from "@/content/profile";
+import { experience } from "@/content/profile";
 import { formatMonth } from "@/lib/format";
 import { Section } from "@/components/ui/Section";
 import { TagList } from "@/components/ui/Tag";
@@ -10,7 +10,7 @@ export function Experience() {
       index="02"
       eyebrow="Experience"
       title="Shipping an enterprise HRMS, one module at a time."
-      intro="Most of my work lives inside Workedge HR — payroll, attendance, appraisals and settlement flows used by HR teams every day."
+      intro="Where I've worked, and what I shipped there."
     >
       <ol className="border-t border-line">
         {experience.map((role) => (
@@ -45,19 +45,6 @@ export function Experience() {
         ))}
       </ol>
 
-      <div className="mt-20" data-reveal>
-        <h3 className="eyebrow mb-6">Inside Workedge HR — modules I&apos;ve built on</h3>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {productModules.map((module, i) => (
-            <li key={module.name} className="card group flex flex-col p-6 transition-colors hover:border-line-strong">
-              <span className="font-mono text-xs text-accent">{String(i + 1).padStart(2, "0")}</span>
-              <h4 className="mt-6 text-lg font-semibold tracking-tight">{module.name}</h4>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{module.description}</p>
-              <p className="mt-6 font-mono text-[11px] text-subtle">{module.tech.join(" · ")}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
     </Section>
   );
 }

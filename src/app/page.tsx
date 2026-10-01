@@ -1,11 +1,11 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
 import { Experience } from "@/components/sections/Experience";
-import { Hero } from "@/components/sections/Hero";
 import { Projects } from "@/components/sections/Projects";
 import { Skills } from "@/components/sections/Skills";
+import { Story } from "@/components/sections/Story";
+import { Work } from "@/components/sections/Work";
 import { siteConfig } from "@/config/site";
 import { education, experience, profile, socials } from "@/content/profile";
 
@@ -38,8 +38,8 @@ export default function HomePage() {
       />
       <SiteHeader />
       <main id="main">
-        <Hero />
-        <About />
+        <Story />
+        <Work />
         <Experience />
         <Projects />
         <Skills />

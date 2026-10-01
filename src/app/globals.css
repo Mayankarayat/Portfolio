@@ -229,3 +229,13 @@
     animation: pulse-dot 2.4s ease-in-out infinite;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Story: poster stills fade out once the live 3D stage is ready beneath them.
+ * ------------------------------------------------------------------------- */
+.story-poster {
+  transition: opacity 900ms var(--ease-out-expo);
+}
+.story[data-story="live"] .story-poster {
+  opacity: 0;
+}

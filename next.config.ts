@@ -14,7 +14,14 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // Story clips aren't content-hashed: cache for a week, revalidate in the background.
+        source: "/story/:file*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }],
+      },
+    ];
   },
   async redirects() {
     // Paths the previous react-router build exposed; the site is now a single page.

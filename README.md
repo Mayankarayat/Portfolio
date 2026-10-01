@@ -33,42 +33,70 @@ src/
                         hero-terrain.svg (build-time generated poster)
   components/
     layout/             SiteHeader (client: scroll-spy, mobile menu), SiteFooter
-    sections/           Hero, About, Experience, Projects, Skills, Contact (server)
-    three/              HeroScene (client loader) + terrain-scene (WebGL) + terrain-math
+    sections/           Story (hero + chapters), Work, Experience, Projects, Skills, Contact
+    three/              StoryScene/TerrainScene (client), story-scene/terrain-scene (WebGL),
+                        story-path/terrain-math (pure, tested), useProgressiveScene, render-loop
     contact/            ContactForm (client)
     ui/                 Icon, Section, TagList
   config/site.ts        site URL, navigation, EmailJS config
-  content/              typed content model — the only place portfolio facts live
+  content/              typed content model — profile.ts (facts) and story.ts (chapters)
   lib/                  render-tier (device capability), contact validation, formatting
 ```
 
 - **Content is data.** Every fact on the page comes from `src/content/profile.ts`, typed by
   `src/content/types.ts`. Updating the résumé means editing one file.
 - **Server-first.** Sections are React Server Components; only the header, contact form and
-  3D loader ship JavaScript. Scroll reveals use CSS scroll-driven animations (zero JS) and
+  the two 3D loaders ship JavaScript. Scroll reveals use CSS scroll-driven animations (zero JS) and
   degrade to static content where unsupported or when reduced motion is requested.
 
-### Hero 3D scene
+### 3D story (top of the page)
 
-The hero shows a "data terrain": an organic, noisy surface of bars (raw data) that resolves
-into an ordered, grouped bar chart (a dashboard) as you scroll — a direct nod to the payroll
-and attendance analytics work.
+The page opens as a scroll story told with Mayank's own clips — outside, at the
+desk, thinking it through, then *into the screen*:
+
+- **Media pipeline:** the original portrait 1080×1920 clips are cropped to 16:9,
+  colour-graded to the site palette and encoded at 720p/480p in H.264 MP4 and VP9
+  WebM (`public/story`). Ambient clips are forward+reverse loops (seamless); the
+  final push-in is encoded with short GOPs for smooth scroll-scrubbing. Graded
+  first frames are the poster stills (`src/assets/story`).
+- **Scene** (`story-scene.ts`): each clip is a rounded, film-grained frame hung in a
+  dark, dusty 3D space. Scroll drives the camera along a choreographed path
+  (`story-path.ts`, pure + unit tested): the hero frame fills the screen, pulls
+  back to reveal it floats in space, flies to each chapter's frame beside its copy,
+  and finally dives into the monitor while the clip scrubs — landing in the Work
+  section's data terrain.
+- **Streaming:** only nearby chapters load; a clip preloads within one chapter and
+  only decodes while its frame is on screen. Posters reuse the optimised images
+  the page already downloaded. The engine picks MP4 or WebM per browser support.
+- **Fallback:** chapters are real server-rendered HTML with sticky full-bleed stills,
+  so without WebGL (reduced motion, Save-Data, software GPU, slow devices) the page
+  reads as a cinematic stills story and downloads no video at all.
+
+### Data terrain (Work section)
+
+"Inside Workedge HR": an organic surface of bars (raw data) that resolves into an
+ordered, grouped bar chart (a dashboard) as you scroll.
 
 - One `InstancedBufferGeometry` draw call; heights, the pointer ripple, the intro and the
-  ordered/organic morph are computed in the vertex shader from a few uniforms, so there are
-  no per-frame buffer uploads.
-- `terrain-math.ts` is the reference height model. The GLSL mirrors it, the build-time SVG
-  poster (`/hero-terrain.svg`) and the OG image are generated from it, and it is unit tested.
-- **Progressive loading:** the poster is the first paint. After `load` + `requestIdleCallback`,
-  `HeroScene` decides a render tier (`src/lib/render-tier.ts`) and only then dynamically imports
-  three.js (~133 KB gzip, never on the critical path).
-- **Tiers:** `none` (no WebGL, software GL such as SwiftShader/llvmpipe, reduced motion,
-  Save-Data, 2G, <2 GiB RAM) keeps the poster; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB)
-  gets a smaller grid, lower DPR cap and no pointer tracking; `high` gets the full scene.
+  ordered/organic morph are computed in the vertex shader from a few uniforms.
+- `terrain-math.ts` is the reference height model; the GLSL mirrors it and the build-time
+  SVG poster (`/hero-terrain.svg`) is generated from it.
+
+### Shared WebGL lifecycle
+
+Both scenes use `useProgressiveScene` + `render-loop.ts`:
+
+- three.js is dynamically imported after `load` + `requestIdleCallback`, and only once the
+  section is near the viewport — never on the critical path.
+- **Tiers** (`src/lib/render-tier.ts`, probed once per page): `none` (no WebGL, software GL
+  such as SwiftShader/llvmpipe, reduced motion, Save-Data, 2G, <2 GiB RAM) keeps the static
+  imagery; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB) gets 480p clips, fewer particles,
+  lower DPR caps and no pointer tracking; `high` gets everything.
 - **Runtime safety:** rendering pauses off-screen and in hidden tabs; DPR adapts down when
-  frames are slow; if the device still can't hold ~22 fps at DPR 1, or the WebGL context is
-  lost, or reduced motion is switched on, the scene tears down and the poster remains.
-- QA override: append `?scene=off|low|high` to force a tier.
+  frames are slow; if a device still can't hold ~22 fps at DPR 1, the context is lost, or
+  reduced motion is switched on, the scene tears down and the static imagery remains.
+- QA override: append `?scene=off|low|high` to force a tier (forced tiers skip the
+  performance fallback).
 
 ### Contact form
 
