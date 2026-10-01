@@ -54,11 +54,15 @@ src/
 The page opens as a scroll story told with Mayank's own clips — outside, at the
 desk, thinking it through, then *into the screen*:
 
-- **Media pipeline:** the original portrait 1080×1920 clips are cropped to 16:9,
-  colour-graded to the site palette and encoded at 720p/480p in H.264 MP4 and VP9
-  WebM (`public/story`). Ambient clips are forward+reverse loops (seamless); the
-  final push-in is encoded with short GOPs for smooth scroll-scrubbing. Graded
-  first frames are the poster stills (`src/assets/story`).
+- **Media pipeline:** the original clips are portrait 1080×1920, so each screen shape gets
+  its own cut. Landscape screens get a 16:9 crop whose every frame is AI-upscaled ×4 with
+  Real-ESRGAN (`realesr-general-x4v3`) and resampled to 1080p — that turns a 1080×608 strip
+  into genuinely sharp video — with 4K (3840×2160) upscaled stills. Portrait screens get the
+  clips' native 9:16 framing (1080×1920) and 1440×2560 upscaled stills, so phones never
+  magnify a thin crop. Everything is colour-graded to the site palette and encoded as H.264
+  MP4 (1080p/720p landscape, 1080×1920 portrait) plus VP9 WebM fallbacks. Ambient clips are
+  forward+reverse loops (seamless); the final push-in uses short GOPs for smooth scrubbing.
+  Stills live in `src/assets/story` and are served art-directed via `<picture>`.
 - **Scene** (`story-scene.ts`): each clip is a rounded, film-grained frame hung in a
   dark, dusty 3D space. Scroll drives the camera along a choreographed path
   (`story-path.ts`, pure + unit tested): the hero frame fills the screen, pulls
@@ -67,7 +71,8 @@ desk, thinking it through, then *into the screen*:
   section's data terrain.
 - **Streaming:** only nearby chapters load; a clip preloads within one chapter and
   only decodes while its frame is on screen. Posters reuse the optimised images
-  the page already downloaded. The engine picks MP4 or WebM per browser support.
+  the page already downloaded. The engine picks MP4 or WebM per browser support, and
+  rebuilds itself (16:9 ↔ 9:16 frames) when a device rotates.
 - **Fallback:** chapters are real server-rendered HTML with sticky full-bleed stills,
   so without WebGL (reduced motion, Save-Data, software GPU, slow devices) the page
   reads as a cinematic stills story and downloads no video at all.
@@ -90,7 +95,7 @@ Both scenes use `useProgressiveScene` + `render-loop.ts`:
   section is near the viewport — never on the critical path.
 - **Tiers** (`src/lib/render-tier.ts`, probed once per page): `none` (no WebGL, software GL
   such as SwiftShader/llvmpipe, reduced motion, Save-Data, 2G, <2 GiB RAM) keeps the static
-  imagery; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB) gets 480p clips, fewer particles,
+  imagery; `low` (touch, narrow, 3G, ≤4 cores, <4 GiB) gets 720p landscape clips, fewer particles,
   lower DPR caps and no pointer tracking; `high` gets everything.
 - **Runtime safety:** rendering pauses off-screen and in hidden tabs; DPR adapts down when
   frames are slow; if a device still can't hold ~22 fps at DPR 1, the context is lost, or

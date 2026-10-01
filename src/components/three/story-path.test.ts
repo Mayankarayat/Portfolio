@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CAMERA_FOV, FRAME_SIZE, STORY_END, STORY_FRAMES, cameraAt, framePose, scrubAt, type Pose, type StoryFrame, type Vec3 } from "./story-path";
+import { CAMERA_FOV, FRAME_SIZES, STORY_END, STORY_FRAMES, cameraAt, framePose, scrubAt, orientationFor, type Pose, type StoryFrame, type Vec3 } from "./story-path";
 
 const ASPECTS = { desktop: 16 / 10, phone: 390 / 844 };
 
@@ -22,8 +22,8 @@ const normalize = (a: Vec3): Vec3 => {
   return [a[0] / l, a[1] / l, a[2] / l];
 };
 
-function corners(frame: StoryFrame): Vec3[] {
-  const { width: w, height: h } = FRAME_SIZE;
+function corners(frame: StoryFrame, aspect: number): Vec3[] {
+  const { width: w, height: h } = FRAME_SIZES[orientationFor(aspect)];
   const r = frame.rotationY;
   const right: Vec3 = [Math.cos(r), 0, -Math.sin(r)];
   return [
@@ -43,7 +43,7 @@ describe("story camera path", () => {
     it(`fill pose covers the whole ${name} viewport`, () => {
       for (const frame of STORY_FRAMES) {
         const pose = framePose(frame, "fill", aspect);
-        const pts = corners(frame).map((c) => project(pose, c, aspect));
+        const pts = corners(frame, aspect).map((c) => project(pose, c, aspect));
         expect(Math.min(...pts.map((p) => p.x))).toBeLessThanOrEqual(-1);
         expect(Math.max(...pts.map((p) => p.x))).toBeGreaterThanOrEqual(1);
         expect(Math.min(...pts.map((p) => p.y))).toBeLessThanOrEqual(-1);
@@ -51,30 +51,35 @@ describe("story camera path", () => {
       }
     });
 
-    it(`card pose keeps the whole frame on the ${name} screen`, () => {
-      for (const frame of STORY_FRAMES) {
-        const pose = framePose(frame, "card", aspect);
-        for (const c of corners(frame)) {
-          const p = project(pose, c, aspect);
-          expect(Math.abs(p.x)).toBeLessThanOrEqual(1.001);
-          expect(Math.abs(p.y)).toBeLessThanOrEqual(1.001);
-        }
+    it(`moves continuously on ${name} — no jumps between scroll samples`, () => {
+      let prev = cameraAt(0, aspect).position;
+      for (let p = 0.005; p <= STORY_END; p += 0.005) {
+        const next = cameraAt(p, aspect).position;
+        expect(Math.hypot(next[0] - prev[0], next[1] - prev[1], next[2] - prev[2])).toBeLessThan(0.5);
+        prev = next;
       }
     });
   }
 
+  it("keeps desktop cards fully on screen", () => {
+    for (const frame of STORY_FRAMES) {
+      const pose = framePose(frame, "card", ASPECTS.desktop);
+      for (const c of corners(frame, ASPECTS.desktop)) {
+        const p = project(pose, c, ASPECTS.desktop);
+        expect(Math.abs(p.x)).toBeLessThanOrEqual(1.001);
+        expect(Math.abs(p.y)).toBeLessThanOrEqual(1.001);
+      }
+    }
+  });
+
+  it("rests every chapter full-screen on phones, showing cards only mid-flight", () => {
+    for (const p of [0, 1, 2, 3]) expect(cameraAt(p, ASPECTS.phone).card).toBe(0);
+    expect(cameraAt(0.5, ASPECTS.phone).card).toBeGreaterThan(0.9);
+  });
+
   it("places desktop cards beside the copy (right half of the screen)", () => {
     const pose = framePose(STORY_FRAMES[1]!, "card", ASPECTS.desktop);
     expect(project(pose, STORY_FRAMES[1]!.position, ASPECTS.desktop).x).toBeCloseTo(0.4, 2);
-  });
-
-  it("moves continuously — no jumps between scroll samples", () => {
-    let prev = cameraAt(0, ASPECTS.desktop).position;
-    for (let p = 0.005; p <= STORY_END; p += 0.005) {
-      const next = cameraAt(p, ASPECTS.desktop).position;
-      expect(Math.hypot(next[0] - prev[0], next[1] - prev[1], next[2] - prev[2])).toBeLessThan(0.5);
-      prev = next;
-    }
   });
 
   it("scrubs the final clip only during the dive", () => {

@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
+    // 85 is used for the full-bleed story stills.
+    qualities: [75, 85],
   },
   async headers() {
     return [

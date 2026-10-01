@@ -3,11 +3,17 @@
  * unit tested.
  *
  * Progress `p` is measured in viewport heights scrolled into the story section,
- * so chapter `i`'s copy is centred on screen at `p = i`. The camera:
+ * so chapter `i`'s copy is centred on screen at `p = i`.
+ *
+ * Landscape screens (16:9 frames):
  *   0      fills the screen with frame 0 (reads as a full-bleed hero)
  *   ~0.5   pulls back to reveal it as a frame floating in space
  *   1..3   flies to each chapter's frame and rests beside its copy
  *   3→3.8  dives into the last frame (the push-in toward the monitor)
+ *
+ * Portrait screens (9:16 frames, the clips' native framing): every chapter
+ * rests full-screen like a story, and the camera pulls far back between
+ * chapters so the frames are seen floating in space mid-flight.
  */
 
 export type Vec3 = readonly [number, number, number];
@@ -23,8 +29,16 @@ export interface Pose {
   target: Vec3;
 }
 
-/** World-space size of every frame plane (16:9). */
-export const FRAME_SIZE = { width: 6.4, height: 3.6 } as const;
+export type Orientation = "landscape" | "portrait";
+
+/** World-space frame size: 16:9 on landscape screens, 9:16 (native clips) on portrait. */
+export const FRAME_SIZES = {
+  landscape: { width: 6.4, height: 3.6 },
+  portrait: { width: 3.6, height: 6.4 },
+} as const satisfies Record<Orientation, { width: number; height: number }>;
+
+/** Matches the CSS `(orientation: portrait)` media query (height ≥ width). */
+export const orientationFor = (aspect: number): Orientation => (aspect > 1 ? "landscape" : "portrait");
 export const CAMERA_FOV = 40;
 
 export const STORY_FRAMES: readonly StoryFrame[] = [
@@ -54,7 +68,7 @@ export function smoothstep(edge0: number, edge1: number, x: number): number {
 
 /** Where a framed card should sit on screen, in NDC, and how wide it is. */
 function cardLayout(aspect: number) {
-  return aspect >= 1
+  return orientationFor(aspect) === "landscape"
     ? { widthFraction: 0.52, cx: 0.4, cy: 0.02 } // beside the copy on the left
     : { widthFraction: 0.9, cx: 0, cy: 0.36 }; // above the copy on portrait screens
 }
@@ -66,7 +80,7 @@ function cardLayout(aspect: number) {
  */
 export function framePose(frame: StoryFrame, kind: PoseKind, aspect: number, fovDeg = CAMERA_FOV): Pose {
   const t = Math.tan((fovDeg * Math.PI) / 360);
-  const { width, height } = FRAME_SIZE;
+  const { width, height } = FRAME_SIZES[orientationFor(aspect)];
 
   let distance: number;
   let cx = 0;
@@ -98,7 +112,7 @@ interface Keyframe {
   kind: PoseKind;
 }
 
-const KEYFRAMES: readonly Keyframe[] = [
+const LANDSCAPE_KEYFRAMES: readonly Keyframe[] = [
   { p: 0, frame: 0, kind: "fill" },
   { p: 0.06, frame: 0, kind: "fill" },
   { p: 0.5, frame: 0, kind: "card" },
@@ -112,33 +126,51 @@ const KEYFRAMES: readonly Keyframe[] = [
   { p: STORY_END, frame: 3, kind: "fill" },
 ];
 
+const PORTRAIT_KEYFRAMES: readonly Keyframe[] = [
+  { p: 0, frame: 0, kind: "fill" },
+  { p: 0.12, frame: 0, kind: "fill" },
+  { p: 0.88, frame: 1, kind: "fill" },
+  { p: 1.12, frame: 1, kind: "fill" },
+  { p: 1.88, frame: 2, kind: "fill" },
+  { p: 2.12, frame: 2, kind: "fill" },
+  { p: 2.88, frame: 3, kind: "fill" },
+  { p: STORY_END, frame: 3, kind: "fill" },
+];
+
+export interface CameraState extends Pose {
+  /** 0 = a frame fills the screen, 1 = frames float as cards (drives rims/glow). */
+  card: number;
+}
+
 /** Camera pose for a given scroll progress and viewport aspect ratio. */
-export function cameraAt(progress: number, aspect: number): Pose {
+export function cameraAt(progress: number, aspect: number): CameraState {
+  const portrait = orientationFor(aspect) === "portrait";
+  const keyframes = portrait ? PORTRAIT_KEYFRAMES : LANDSCAPE_KEYFRAMES;
   const p = Math.min(STORY_END, Math.max(0, progress));
   let i = 0;
-  while (i < KEYFRAMES.length - 2 && p > KEYFRAMES[i + 1]!.p) i++;
-  const from = KEYFRAMES[i]!;
-  const to = KEYFRAMES[i + 1]!;
+  while (i < keyframes.length - 2 && p > keyframes[i + 1]!.p) i++;
+  const from = keyframes[i]!;
+  const to = keyframes[i + 1]!;
 
   const t = smoothstep(from.p, to.p, p);
   const a = framePose(STORY_FRAMES[from.frame]!, from.kind, aspect);
   const b = framePose(STORY_FRAMES[to.frame]!, to.kind, aspect);
   let position = lerp3(a.position, b.position, t);
   let target = lerp3(a.target, b.target, t);
+  const kindA = from.kind === "card" ? 1 : 0;
+  const kindB = to.kind === "card" ? 1 : 0;
+  let card = kindA + (kindB - kindA) * t;
 
   // Flying between frames: arc up and back so the depth of the space reads.
+  // Portrait pulls much further back, since frames otherwise always fill the screen.
   if (from.frame !== to.frame) {
     const arc = Math.sin(Math.PI * t);
-    const lift: Vec3 = [0, arc * 0.9, arc * 3];
-    position = add(position, lift);
-    target = add(target, [0, arc * 0.6, arc * 3]);
+    const back = portrait ? 9 : 3;
+    position = add(position, [0, arc * 0.9, arc * back]);
+    target = add(target, [0, arc * 0.6, arc * back]);
+    card = Math.max(card, arc);
   }
-  return { position, target };
-}
-
-/** How "card-like" the scene is (0 = a frame fills the screen) — drives frame borders. */
-export function cardness(progress: number): number {
-  return smoothstep(0.06, 0.4, progress) * (1 - smoothstep(3.1, 3.7, progress));
+  return { position, target, card };
 }
 
 /** Playback position (0–1) of the scroll-scrubbed final clip. */

@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import type { StoryMedia } from "./story-scene";
 import { useProgressiveScene } from "./useProgressiveScene";
 
+const PORTRAIT = "(orientation: portrait)";
+
 /**
  * Live 3D layer for the story section. Until it is ready (or on devices that
  * don't get it) the section shows its server-rendered poster stills; once live
@@ -17,11 +19,17 @@ export function StoryScene({ media }: { media: readonly StoryMedia[] }) {
         // Reuse the optimised (AVIF/WebP) stills the browser already fetched for
         // the poster layer instead of downloading the source JPEGs again.
         const posters = canvas.closest("section")?.querySelectorAll<HTMLImageElement>(".story-poster img");
-        const resolved = media.map((m, i) => ({ ...m, poster: posters?.[i]?.currentSrc || m.poster }));
+        const orientation = window.matchMedia(PORTRAIT).matches ? "portrait" : "landscape";
+        const resolved = media.map((item, i) => {
+          const current = posters?.[i]?.currentSrc;
+          return current ? { ...item, posters: { ...item.posters, [orientation]: current } } : item;
+        });
         return m.createStory(canvas, options, resolved);
       }),
     progress: (rect, vh) => -rect.top / Math.max(1, vh),
     bootMargin: "0px",
+    // Frames are 16:9 or 9:16 depending on the screen; rebuild when it rotates.
+    rebootQuery: PORTRAIT,
   });
 
   useEffect(() => {

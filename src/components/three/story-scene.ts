@@ -19,7 +19,7 @@ import {
 } from "three";
 import { createRenderLoop } from "./render-loop";
 import type { SceneHandle, SceneOptions } from "./scene-types";
-import { CAMERA_FOV, FRAME_SIZE, STORY_FRAMES, cameraAt, cardness, fadeAt, scrubAt } from "./story-path";
+import { CAMERA_FOV, FRAME_SIZES, STORY_FRAMES, cameraAt, fadeAt, orientationFor, scrubAt, type Orientation } from "./story-path";
 import { TERRAIN_PALETTE } from "./terrain-math";
 
 /**
@@ -30,8 +30,9 @@ import { TERRAIN_PALETTE } from "./terrain-math";
  */
 
 export interface StoryMedia {
-  poster: string;
-  /** Base path; renditions live at `${video}-{720|480}.{mp4|webm}`. */
+  /** Poster still per orientation (landscape 16:9 crop, portrait native 9:16). */
+  posters: Record<Orientation, string>;
+  /** Clip base name; see `videoUrl` for the rendition naming scheme. */
   video: string;
   mode: "loop" | "scrub";
 }
@@ -140,7 +141,7 @@ const dustFragment = /* glsl */ `
   }
 `;
 
-const MAX_DPR = { high: 1.75, low: 1.5 } as const;
+const MAX_DPR = { high: 2, low: 1.5 } as const;
 
 /** H.264 where it's fully supported (smaller, hardware-decoded); VP9 WebM otherwise. */
 let extension: "mp4" | "webm" | undefined;
@@ -150,6 +151,16 @@ function videoExtension(): "mp4" | "webm" {
     extension = probe.canPlayType('video/mp4; codecs="avc1.640028"') === "probably" ? "mp4" : "webm";
   }
   return extension;
+}
+
+/**
+ * Landscape: AI-upscaled 16:9 crops at 1080p (high tier) / 720p (low), WebM at 720p.
+ * Portrait: the clips' native 9:16 framing (1080×1920 MP4, 720×1280 WebM).
+ */
+function videoUrl(name: string, orientation: Orientation, tier: SceneOptions["tier"]): string {
+  const ext = videoExtension();
+  if (orientation === "portrait") return `/story/${name}-portrait.${ext}`;
+  return `/story/${name}-${ext === "mp4" && tier === "high" ? 1080 : 720}.${ext}`;
 }
 const DUST = { high: 900, low: 260 } as const;
 
@@ -180,8 +191,12 @@ export function createStory(canvas: HTMLCanvasElement, options: SceneOptions, me
   const fog = { near: { value: 16 }, far: { value: 44 } };
 
   // --- frames ----------------------------------------------------------------
-  const frameGeometry = new PlaneGeometry(FRAME_SIZE.width, FRAME_SIZE.height);
-  const glowGeometry = new PlaneGeometry(FRAME_SIZE.width * 1.7, FRAME_SIZE.height * 2.1);
+  // Frame shape is fixed per orientation; StoryScene re-creates the scene if it flips.
+  const initial = canvas.getBoundingClientRect();
+  const orientation = orientationFor(initial.width / Math.max(1, initial.height));
+  const size = FRAME_SIZES[orientation];
+  const frameGeometry = new PlaneGeometry(size.width, size.height);
+  const glowGeometry = new PlaneGeometry(size.width * 1.7, size.height * 1.7);
   const time = { value: 0 };
   const fade = { value: 0 };
   const border = { value: 0 };
@@ -203,7 +218,7 @@ export function createStory(canvas: HTMLCanvasElement, options: SceneOptions, me
       uniforms: {
         uMap: { value: null },
         uHasMap: { value: 0 },
-        uSize: { value: new Vector2(FRAME_SIZE.width, FRAME_SIZE.height) },
+        uSize: { value: new Vector2(size.width, size.height) },
         uRadius: { value: 0.14 },
         uBorder: border,
         uTime: time,
@@ -277,7 +292,7 @@ export function createStory(canvas: HTMLCanvasElement, options: SceneOptions, me
     const chapter = chapters[index]!;
     if (chapter.posterRequested) return;
     chapter.posterRequested = true;
-    loader.load(chapter.media.poster, (texture) => {
+    loader.load(chapter.media.posters[orientation], (texture) => {
       if (disposed) return texture.dispose();
       texture.colorSpace = SRGBColorSpace;
       chapter.poster = texture;
@@ -296,7 +311,7 @@ export function createStory(canvas: HTMLCanvasElement, options: SceneOptions, me
     video.loop = chapter.media.mode === "loop";
     video.preload = "auto";
     video.crossOrigin = "anonymous";
-    video.src = `${chapter.media.video}-${tier === "high" ? 720 : 480}.${videoExtension()}`;
+    video.src = videoUrl(chapter.media.video, orientation, tier);
     video.addEventListener(
       "loadeddata",
       () => {
@@ -388,9 +403,8 @@ export function createStory(canvas: HTMLCanvasElement, options: SceneOptions, me
       camera.position.set(pose.position[0] + pointer.sx * 0.35, pose.position[1] + pointer.sy * 0.2 + float, pose.position[2]);
       camera.lookAt(pose.target[0] + pointer.sx * 0.12, pose.target[1] + pointer.sy * 0.08 + float, pose.target[2]);
 
-      const card = cardness(progress);
-      border.value = card;
-      glowStrength.value = 0.22 * card;
+      border.value = pose.card;
+      glowStrength.value = 0.22 * pose.card;
       fade.value = fadeAt(progress);
 
       syncMedia();

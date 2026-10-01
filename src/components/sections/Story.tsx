@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import type { CSSProperties } from "react";
 import { profile, socials } from "@/content/profile";
 import { storyChapters, type StoryChapter } from "@/content/story";
@@ -11,7 +11,11 @@ import { Icon } from "@/components/ui/Icon";
  * still as a sticky full-bleed background, so the page reads the same way.
  */
 export function Story() {
-  const media = storyChapters.map((c) => ({ poster: c.image.src, video: c.video, mode: c.mode }));
+  const media = storyChapters.map((c) => ({
+    posters: { landscape: c.image.src, portrait: c.imagePortrait.src },
+    video: c.video,
+    mode: c.mode,
+  }));
   const [hero, ...chapters] = storyChapters;
 
   return (
@@ -28,19 +32,31 @@ export function Story() {
   );
 }
 
+/**
+ * Art-directed still: the native 9:16 frame on portrait screens, the 4K 16:9
+ * AI-upscaled crop elsewhere. Served at a higher quality than the default,
+ * since these are full-bleed.
+ */
 function Poster({ chapter, eager = false }: { chapter: StoryChapter; eager?: boolean }) {
+  const common = { alt: chapter.alt, sizes: "100vw", quality: 85 } as const;
+  const {
+    props: { srcSet: portrait },
+  } = getImageProps({ ...common, src: chapter.imagePortrait });
+  const { props: landscape } = getImageProps({
+    ...common,
+    src: chapter.image,
+    loading: eager ? "eager" : "lazy",
+    fetchPriority: eager ? "high" : "auto",
+  });
+
   return (
     <div className="story-poster absolute inset-0">
       <div className="sticky top-0 h-svh overflow-hidden">
-        <Image
-          src={chapter.image}
-          alt={chapter.alt}
-          fill
-          sizes="100vw"
-          loading={eager ? "eager" : "lazy"}
-          fetchPriority={eager ? "high" : "auto"}
-          className="object-cover"
-        />
+        <picture>
+          <source media="(orientation: portrait)" srcSet={portrait} sizes={common.sizes} />
+          {/* eslint-disable-next-line jsx-a11y/alt-text -- alt is included in the spread props */}
+          <img {...landscape} className="absolute inset-0 h-full w-full object-cover" />
+        </picture>
       </div>
     </div>
   );
